@@ -1,0 +1,17 @@
+{
+  "name": "homework12",
+  "version": "1.0.0",
+  "description": "This project is centered around inquirer and postgreSQL. The project uses inquirer to accept user inputs and uses that input to display and update employees using postgreSQL to build the databases.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "inquirer": "^9.2.20",
+    "sequelize": "^6.37.3"
+  }
+}
