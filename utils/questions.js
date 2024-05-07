@@ -1,56 +1,113 @@
-const inquirer = require("inquirer");
-
 // Questions for the user
-const questions = (callback) => inquirer.prompt([
-  {
-    type: 'input',
-    message: 'What is the title of your README?',
-    name: 'title'
-  },
-  {
-    type: 'input',
-    message: 'What is the decription of your application?',
-    name: 'description'
-  },
-  {
-    type: 'input',
-    message: 'How is this application meant to be used?',
-    name: 'usage'
-  },
-  {
-    type: 'input',
-    message: 'How do you install this application?',
-    name: 'install'
-  },
-  {
-    type: 'input',
-    message: 'How do you test the application?',
-    name: 'test'
-  },
-  {
-    type: 'input',
-    message: 'Did anyone help contribute to this application?',
-    name: 'cont'
-  },
-  {
-    type: 'input',
-    message: 'What is your GitHub username?',
-    name: 'username'
-  },
-  {
-    type: 'input',
-    message: 'What e-mail address can you be reached at?',
-    name: 'email'
-  },
+const questions = [
   {
     type: 'list',
-    message: 'What license would you like to use for your application?',
-    name: 'license',
-    choices: ["No License", "Apache 2.0", "Boost Software v1.0", "BSD 2-Clause 'Simplified'", "BSD 3-Clause 'New' or 'Revised'", "Creative Commons Zero v1.0", "Eclipse Public v2.0", "GNU Affero General Public v3.0", "GNU General Public v3.0", "MIT", "Mozilla Public v2.0"]
+    message: 'What would you like to do?',
+    name: 'home',
+    choices: ["View All Employees", "Add An Employee", "Update An Employee", "Delete An Employee", "View All Roles", "Add A Role", "Update An Employee Role", "Delete A Role", "View All Departments", "Add A Department", "Delete A Department"]
+  },
+  {
+    when: (answers) => {
+      if(answers.home === 'View All Employees'){
+        console.log("Hello")
+      }
+    }
+  },
+  {
+    type: 'input',
+    name: 'addEmployee',
+    message: 'Enter a value related to the selected item:',
+    when: (answers) => {
+      if(answers.home === 'Add An Employee'){
+
+      }
+    }
+  },
+  {
+    type: 'input',
+    name: 'updateEmployee',
+    message: 'Enter a value related to the selected item:',
+    when: (answers) => {
+      if(answers.home === 'Update An Employee'){
+
+      }
+    }
+  },
+  {
+    type: 'input',
+    name: 'deleteEmployee',
+    message: 'Enter a value related to the selected item:',
+    when: (answers) => {
+      if(answers.home === 'Delete An Employee'){
+
+      }
+    }
+  },
+  {
+    when: (answers) => {
+      if(answers.home === 'View All Roles'){
+
+      }
+    }
+  },
+  {
+    type: 'input',
+    name: 'addRole',
+    message: 'Enter a value related to the selected item:',
+    when: (answers) => {
+      if(answers.home === 'Add A Role'){
+
+      }
+    }
+  },
+  {
+    type: 'input',
+    name: 'updateRole',
+    message: 'Enter a value related to the selected item:',
+    when: (answers) => {
+      if(answers.home === 'Update An Employee Role'){
+
+      }
+    }
+  },
+  {
+    type: 'input',
+    name: 'deleteRole',
+    message: 'Enter a value related to the selected item:',
+    when: (answers) => {
+      if(answers.home === 'Delete A Role'){
+
+      }
+    }
+  },
+  {
+    when: (answers) => {
+      if(answers.home === 'View All Department'){
+
+      }
+    }
+  },
+  {
+    type: 'input',
+    name: 'addDepartment',
+    message: 'Enter a value related to the selected item:',
+    when: (answers) => {
+      if(answers.home === 'Add A Department'){
+
+      }
+    }
+  },
+  {
+    type: 'input',
+    name: 'deleteDepartment',
+    message: 'Enter a value related to the selected item:',
+    when: (answers) => {
+      if(answers.home === 'Delete A Department'){
+
+      }
+    }
   }
-]).then((resp) => {
-  callback(resp);
-});
+];
 
 // Exporting questions to use the selections on the index.js
 module.exports = {
