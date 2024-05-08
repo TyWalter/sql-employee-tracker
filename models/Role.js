@@ -7,14 +7,18 @@ class Role extends Model {}
 // Setting properties of the class
 Role.init(
   {
-    firstName: {
+    title: {
       type: DataTypes.STRING
     },
-    lastName: {
-      type: DataTypes.STRING
+    salary: {
+      type: DataTypes.INTEGER
     },
-    email: {
-      type: DataTypes.STRING
+    department_id: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: "department",
+        key: "id"
+      }
     }
   },
   {

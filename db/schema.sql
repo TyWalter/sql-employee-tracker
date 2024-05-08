@@ -15,4 +15,4 @@ CREATE TABLE role_db;
 \c employee_db;
 
 /* Run seeds.sql to pre-populate table */
--- \i seeds.sql;
+\i seeds.sql;

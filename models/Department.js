@@ -7,13 +7,7 @@ class Department extends Model {}
 // Setting properties of the class
 Department.init(
   {
-    firstName: {
-      type: DataTypes.STRING
-    },
-    lastName: {
-      type: DataTypes.STRING
-    },
-    email: {
+    departmentName: {
       type: DataTypes.STRING
     }
   },
