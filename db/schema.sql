@@ -37,6 +37,3 @@ CREATE TABLE employees (
   REFERENCES employees(id)
   ON DELETE SET NULL
 );
-
--- Run seeds.sql to pre-populate database 
-\i seeds.sql;

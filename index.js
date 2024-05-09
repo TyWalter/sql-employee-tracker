@@ -1,26 +1,5 @@
-const {questions, askQuestion} = require("./utils/questions");
+const {askQuestion} = require("./utils/js/questions");
 const fs = require("fs").promises;
-
-
-
-
-
-
-// Hardcoded query: DELETE FROM course_names WHERE id = 3;
-// pool.query(`DELETE FROM course_names WHERE id = $1`, [3], (err, {rows}) => {
-//   if (err) {
-//     console.log(err);
-//   }
-//   console.log(rows);
-// });
-
-// Query database
-// pool.query('SELECT * FROM course_names', function (err, {rows}) {
-//   console.log(rows);
-// });
-
-
-
 
 // Reading the txt file, awaiting the response and then posting the txt file and then running questions
 async function start() {
