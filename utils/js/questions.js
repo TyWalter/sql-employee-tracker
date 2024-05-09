@@ -76,7 +76,7 @@ function askQuestion(){
           console.log(err.message);
         } else {
           const empChoices = rows.map(emp => ({
-            name: emp.title,
+            name: emp.first_name + " " + emp.last_name,
             value: [emp.id, emp.first_name + " " + emp.last_name, emp.role_id, emp.department_id]
           }));
           inquirer.prompt({
