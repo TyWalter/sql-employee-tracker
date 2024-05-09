@@ -1,7 +1,6 @@
 const inquirer = require("inquirer");
 const {Pool} = require("pg");
 const fs = require("fs").promises;
-require('dotenv').config();
 
 // Connect to database
 const pool = new Pool(
@@ -30,20 +29,18 @@ function askQuestion(){
     if(answers.home === 'Quit'){
       const data = await fs.readFile('./utils/images/art2.txt', 'utf8');
       console.log(data, `
-Goodbye from ASCII Gary`);
-
-
+                      
+                      Goodbye`
+      );
     } else if(answers.home === 'View All Employees'){
       pool.query(`SELECT e.id, e.first_name, e.last_name, r.title, d.department_name AS department, r.salary, CONCAT(manager.first_name, ' ', manager.last_name) AS manager
       FROM employees e
       JOIN roles r ON e.role_id = r.id
       JOIN departments d ON r.department_id = d.id
       LEFT JOIN employees AS manager ON e.manager_id = manager.id;`, function (err, {rows}){
-        pool.query(console.log(rows));
+        console.table(rows)
+        askQuestion();
       })
-      askQuestion();
-
-
     } else if(answers.home === 'Add An Employee'){
       pool.query('SELECT * FROM employee_db');
       inquirer.prompt(
@@ -95,8 +92,14 @@ Goodbye from ASCII Gary`);
 
 
     } else if(answers.home === 'View All Roles'){
-      console.log("hello");
-      askQuestion();
+      pool.query(`SELECT e.id, e.first_name, e.last_name, r.title, d.department_name AS department, r.salary, CONCAT(manager.first_name, ' ', manager.last_name) AS manager
+      FROM employees e
+      JOIN roles r ON e.role_id = r.id
+      JOIN departments d ON r.department_id = d.id
+      LEFT JOIN employees AS manager ON e.manager_id = manager.id;`, function (err, {rows}){
+        console.table(rows)
+        askQuestion();
+      })
 
 
     } else if(answers.home === 'Add A Role'){
