@@ -1,6 +1,7 @@
 const inquirer = require("inquirer");
 const {Pool} = require("pg");
 const fs = require("fs").promises;
+const cTable = require("console.table");
 
 // Connect to database
 const pool = new Pool(
@@ -33,16 +34,12 @@ function askQuestion(){
                       Goodbye`
       );
     } else if(answers.home === 'View All Employees'){
-      pool.query(`SELECT e.id, e.first_name, e.last_name, r.title, d.department_name AS department, r.salary, CONCAT(manager.first_name, ' ', manager.last_name) AS manager
-      FROM employees e
-      JOIN roles r ON e.role_id = r.id
-      JOIN departments d ON r.department_id = d.id
-      LEFT JOIN employees AS manager ON e.manager_id = manager.id;`, function (err, {rows}){
+      pool.query(`SELECT e.id, e.first_name, e.last_name, r.title, d.department_name AS department, r.salary, CONCAT(manager.first_name, ' ', manager.last_name) AS manager FROM employees e JOIN roles r ON e.role_id = r.id JOIN departments d ON r.department_id = d.id LEFT JOIN employees AS manager ON e.manager_id = manager.id;`, function (err, {rows}){
         console.table(rows)
         askQuestion();
       })
     } else if(answers.home === 'Add An Employee'){
-      pool.query('SELECT * FROM employee_db');
+      pool.query('SELECT * FROM employees');
       inquirer.prompt(
         {
           type: 'input',
@@ -67,21 +64,7 @@ function askQuestion(){
           choices: employees
         }
       )
-
-
       .then(() => {askQuestion()});
-    } else if(answers.home === 'Update An Employee'){
-      inquirer.prompt({
-        type: 'input',
-        name: 'updateEmployee',
-        message: 'Enter a value related to the selected item:'
-      })
-      .then((resp) =>
-        console.log(resp)
-      )
-      .then(() => {askQuestion()});
-
-
     } else if(answers.home === 'Delete An Employee'){
       inquirer.prompt({
         type: 'input',
@@ -89,65 +72,123 @@ function askQuestion(){
         message: 'Enter a value related to the selected item:'
       })
       .then(() => {askQuestion()});
-
-
     } else if(answers.home === 'View All Roles'){
-      pool.query(`SELECT e.id, e.first_name, e.last_name, r.title, d.department_name AS department, r.salary, CONCAT(manager.first_name, ' ', manager.last_name) AS manager
-      FROM employees e
-      JOIN roles r ON e.role_id = r.id
-      JOIN departments d ON r.department_id = d.id
-      LEFT JOIN employees AS manager ON e.manager_id = manager.id;`, function (err, {rows}){
+      pool.query(`SELECT r.id, r.title, d.department_name AS department, r.salary FROM roles r LEFT JOIN departments d ON r.department_id = d.id;`, function (err, {rows}){
         console.table(rows)
         askQuestion();
       })
-
-
     } else if(answers.home === 'Add A Role'){
-      inquirer.prompt({
-        type: 'input',
-        name: 'addRole',
-        message: 'Enter a value related to the selected item:'
+      pool.query('SELECT * FROM departments', (err, {rows}) => {
+        const deptChoices = rows.map(dept => ({
+          name: dept.department_name,
+          value: dept.id
+        }))
+        inquirer.prompt([
+          {
+            type: 'input',
+            name: 'addRoleTitle',
+            message: 'What is the name of the role?'
+          },
+          {
+            type: 'input',
+            name: 'addRoleSalary',
+            message: 'What is the salary of the role?'
+          },
+          {
+            type: 'list',
+            name: 'addRoleDepartment',
+            message: 'Which department does the role belong to?',
+            choices: deptChoices
+          }
+        ])
+        .then(resp => {
+          console.log(resp)
+          pool.query(`INSERT INTO roles(title, salary, department_id) VALUES ($1, $2, $3)`, [resp.addRoleTitle, resp.addRoleSalary, resp.addRoleDepartment], function(err){
+            if (err){
+              console.log(err.message);
+            } 
+          })
+          console.log(`Added ${resp.addRoleTitle} to the database`)
+          askQuestion();
+        })
       })
-      .then(() => {askQuestion()});
-
-
     } else if(answers.home === 'Update An Employee Role'){
-      inquirer.prompt({
-        type: 'input',
-        name: 'updateRole',
-        message: 'Enter a value related to the selected item:'
+      pool.query('SELECT * FROM employees', (err, {rows}) => {
+        console.log(rows)
+        const employeeChoices = rows.map(employee => ({
+          name: CONCAT(employee.first_name, ' ', employee.last_name),
+          value: [employee.id, employee.first_name, employee.last_name, employee.role_id, employee.department_id]
+        }))
+        inquirer.prompt({
+          type: 'list',
+          name: 'updateRoleEmployee',
+          message: "Which employee's role do you want to update?",
+          choices: employeeChoices
+        })
+        .then(resp => {
+          pool.query(`UPDATE roles WHERE id = ${resp.deleteRole[0]};`);
+          console.log(`Removed ${resp.deleteRole[1]} from the database`)
+          askQuestion();
+        })
       })
-      .then(() => {askQuestion()});
-
-
     } else if(answers.home === 'Delete A Role'){
-      inquirer.prompt({
-        type: 'input',
-        name: 'deleteEmployee',
-        message: 'Enter a value related to the selected item:'
+      pool.query('SELECT * FROM roles', (err, {rows}) => {
+        console.log(rows)
+        const roleChoices = rows.map(role => ({
+          name: role.title,
+          value: [role.id, role.title, role.salary, role.department_id]
+        }))
+        inquirer.prompt({
+          type: 'list',
+          name: 'deleteRole',
+          message: 'Which role would you like to delete?',
+          choices: roleChoices
+        })
+        .then(resp => {
+          console.log(resp.deleteRole)
+          pool.query(`DELETE FROM roles WHERE id = ${resp.deleteRole[0]};`);
+          console.log(`Removed ${resp.deleteRole[1]} from the database`)
+          askQuestion();
+        })
       })
-      .then(() => {askQuestion()});
-
-
     } else if(answers.home === 'View All Departments'){
-      console.log("hello");
-      askQuestion();
+      pool.query(`SELECT id, department_name AS department FROM departments`, function (err, {rows}){
+        console.table(rows)
+        askQuestion();
+      })
     } else if(answers.home === 'Add A Department'){
       inquirer.prompt({
         type: 'input',
         name: 'addDepartment',
-        message: 'Enter a value related to the selected item:'
+        message: 'What is the name of the department?'
       })
-      .then(() => {askQuestion()});
-
-
+      .then(resp => {
+        pool.query(`INSERT INTO departments(department_name) VALUES ($1)`, [resp.addDepartment], function(err){
+          if (err){
+            console.log(err.message);
+          } 
+        })
+        console.log(`Added ${resp.addDepartment} to the database`)
+        askQuestion();
+      });
     } else if(answers.home === 'Delete A Department'){
-      inquirer.prompt({
-        type: 'input',
-        name: 'deleteDepartment',
-        message: 'Enter a value related to the selected item:'
+      pool.query('SELECT * FROM departments', (err, {rows}) => {
+        const deptChoices = rows.map(dept => ({
+          name: dept.department_name,
+          value: [dept.id, dept.department_name]
+        }))
+        inquirer.prompt({
+          type: 'list',
+          name: 'deleteDepartment',
+          message: 'Which department would you like to delete?',
+          choices: deptChoices
+        })
+        .then(resp => {
+          pool.query(`DELETE FROM departments WHERE id = ${resp.deleteDepartment[0]};`);
+          console.log(`Removed ${resp.deleteDepartment[1]} from the database`)
+          askQuestion();
+        })
       })
-      .then(() => {askQuestion()});
     }          
   });
 };
