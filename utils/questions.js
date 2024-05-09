@@ -113,22 +113,41 @@ function askQuestion(){
         })
       })
     } else if(answers.home === 'Update An Employee Role'){
-      pool.query('SELECT * FROM employees', (err, {rows}) => {
+      pool.query('SELECT * FROM employees;', (err, {rows}) => {
         console.log(rows)
         const employeeChoices = rows.map(employee => ({
-          name: CONCAT(employee.first_name, ' ', employee.last_name),
-          value: [employee.id, employee.first_name, employee.last_name, employee.role_id, employee.department_id]
+          name: employee.first_name + " " + employee.last_name,
+          value: [employee.id, employee.first_name + " " + employee.last_name, employee.role_id, employee.department_id]
         }))
-        inquirer.prompt({
-          type: 'list',
-          name: 'updateRoleEmployee',
-          message: "Which employee's role do you want to update?",
-          choices: employeeChoices
-        })
-        .then(resp => {
-          pool.query(`UPDATE roles WHERE id = ${resp.deleteRole[0]};`);
-          console.log(`Removed ${resp.deleteRole[1]} from the database`)
-          askQuestion();
+        pool.query('SELECT * FROM roles;', (err, {rows}) => {
+          console.log(rows)
+          const roleChoices = rows.map(role => ({
+            name: role.title,
+            value: [role.id, role.title, role.salary, role.department_id]
+          }))
+        
+        
+          inquirer.prompt([
+            {
+              type: 'list',
+              name: 'updateRoleEmployee',
+              message: "Which employee's role do you want to update?",
+              choices: employeeChoices
+            },
+            {
+              type: 'list',
+              name: 'updateRoleEmployeeRole',
+              message: "Which role do you want to assign to the selected employee?",
+              choices: roleChoices
+            }
+          ])
+          .then(resp => {
+            console.log(resp.updateRoleEmployee[1])
+            pool.query(`UPDATE employees SET role_id = ${resp.updateRoleEmployeeRole[0]} WHERE id = ${resp.updateRoleEmployee[0]};`);
+            // pool.query(`UPDATE roles WHERE id = ${resp.updateRoleEmployeeRole[0]};`);
+            console.log(`Updated ${resp.updateRoleEmployee[1]}'s role to ${resp.updateRoleEmployeeRole[1]}from the database`)
+            askQuestion();
+          })
         })
       })
     } else if(answers.home === 'Delete A Role'){
