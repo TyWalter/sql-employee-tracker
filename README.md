@@ -5,14 +5,15 @@ This project is centered around inquirer and postgreSQL. The project uses inquir
 The goal of this project is to view tables of employees, their managers, and the addition/deletion of employees, their roles, and their departmetns using inquirer and postgreSQL. 
 
 ## Visuals
-* ![Here is a screenshot](xxxxxxxxxxxxxx) Here is a screenshot of an example employee database.
+* ![Here is a screenshot](./utils/images/screenshot.png) Here is a screenshot of an example employee database.
 
-* [Link to video demonstration](xxxxxxxxxxxxxxx)
+* [Link to video demonstration](https://app.screencastify.com/v2/manage/videos/Lx7cy9uC9rQgdyA93pza)
 
 ## Usage
 This is intended to keep track of employees using inquirer and postgreSQL. This is also for grading purposes.
 
 * When you copy the repo down, run <code>npm i</code> in the root of the directory 
+* Go into <code>/utils/js/questions.js</code> and fill in the Pool constructor with your postgres credentials i.e <code>user:'' and password:''</code>
 * Go into the <code>db folder</code> and login to postgres
 * Then run <code>\i schema.sql</code>
 * Then run <code>\i seeds.sql</code> to pre-populate the database

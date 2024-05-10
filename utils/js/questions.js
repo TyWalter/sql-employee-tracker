@@ -3,7 +3,6 @@ const {Pool} = require("pg");
 const fs = require("fs").promises;
 const cTable = require("console.table");
 
-
 // Connect to database
 const pool = new Pool(
   {
@@ -85,7 +84,6 @@ function askQuestion(){
                 }
               ])
               .then(resp => {
-                console.log(resp)
                 if(resp.addEmployeeManager === "None"){
                   const lead = null
                   pool.query(`INSERT into employees(first_name, last_name, role_id, manager_id) VALUES ($1, $2, $3, $4)`, [resp.addEmployeeFName, resp.addEmployeeLName, resp.addEmployeeRole, lead], (err) => {
