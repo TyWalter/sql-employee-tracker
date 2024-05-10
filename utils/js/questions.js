@@ -6,8 +6,8 @@ const cTable = require("console.table");
 // Connect to database
 const pool = new Pool(
   {
-    user: 'postgres',
-    password: '1234',
+    user: '',
+    password: '',
     host: 'localhost',
     database: 'employee_db'
   },
