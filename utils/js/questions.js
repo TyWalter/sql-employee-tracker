@@ -44,32 +44,73 @@ function askQuestion(){
         };
       });
     } else if(answers.home === 'Add An Employee'){
-      pool.query('SELECT * FROM employees');
-      inquirer.prompt(
-        {
-          type: 'input',
-          name: 'addEmployeeFName',
-          message: "What is the employee's first name?"
-        },
-        {
-          type: 'input',
-          name: 'addEmployeeLName',
-          message: "What is the employee's last name?"
-        },
-        {
-          type: 'list',
-          name: 'addEmployeeRole',
-          message: "What is the employee's role?",
-          choices: roles
-        },
-        {
-          type: 'list',
-          name: 'addEmployeeManager',
-          message: "Who is the employee's manager?",
-          choices: employees
-        }
-      )
-      .then(() => {askQuestion()});
+      pool.query('SELECT * FROM roles', (err, {rows}) => {
+        if(err) {
+          console.log(err.message)
+        } else {
+          const roleChoices = rows.map(role => ({
+            name: role.title,
+            value: role.id
+          }));
+          pool.query('SELECT * FROM employees', (err, {rows}) => {
+            if(err){
+              console.log(err.message)
+            } else {
+              const empChoices = rows.map(emp => ({
+                name: emp.first_name + " " + emp.last_name,
+                value: emp.id
+              }));
+              inquirer.prompt([
+                {
+                  type: 'input',
+                  name: 'addEmployeeFName',
+                  message: "What is the employee's first name?"
+                },
+                {
+                  type: 'input',
+                  name: 'addEmployeeLName',
+                  message: "What is the employee's last name?"
+                },
+                {
+                  type: 'list',
+                  name: 'addEmployeeRole',
+                  message: "What is the employee's role?",
+                  choices: roleChoices
+                },
+                {
+                  type: 'list',
+                  name: 'addEmployeeManager',
+                  message: "Who is the employee's manager?",
+                  choices: ["None", ...empChoices]
+                }
+              ])
+              .then(resp => {
+                console.log(resp)
+                if(resp.addEmployeeManager === "None"){
+                  const lead = null
+                  pool.query(`INSERT into employees(first_name, last_name, role_id, manager_id) VALUES ($1, $2, $3, $4)`, [resp.addEmployeeFName, resp.addEmployeeLName, resp.addEmployeeRole, lead], (err) => {
+                    if(err){
+                      console.log(err.message);
+                    } else {
+                      console.log(`Added ${resp.addEmployeeFName + " " + resp.addEmployeeLName} to the database`);
+                      askQuestion();
+                    };
+                  });
+                } else {
+                  pool.query(`INSERT into employees(first_name, last_name, role_id, manager_id) VALUES ($1, $2, $3, $4)`, [resp.addEmployeeFName, resp.addEmployeeLName, resp.addEmployeeRole, resp.addEmployeeManager], (err) => {
+                    if(err){
+                      console.log(err.message);
+                    } else {
+                      console.log(`Added ${resp.addEmployeeFName + " " + resp.addEmployeeLName} to the database`);
+                      askQuestion();
+                    };
+                  });
+                }
+              });
+            };
+          });
+        };
+      });
     } else if(answers.home === 'Delete An Employee'){
       pool.query('SELECT * FROM employees', (err, {rows}) => {
         if(err) {
@@ -150,29 +191,33 @@ function askQuestion(){
             value: [employee.id, employee.first_name + " " + employee.last_name, employee.role_id, employee.department_id]
           }));
           pool.query('SELECT * FROM roles;', (err, {rows}) => {
-            const roleChoices = rows.map(role => ({
-              name: role.title,
-              value: [role.id, role.title, role.salary, role.department_id]
-            }));
-            inquirer.prompt([
-              {
-                type: 'list',
-                name: 'updateRoleEmployee',
-                message: "Which employee's role do you want to update?",
-                choices: employeeChoices
-              },
-              {
-                type: 'list',
-                name: 'updateRoleEmployeeRole',
-                message: "Which role do you want to assign to the selected employee?",
-                choices: roleChoices
-              }
-            ])
-            .then(resp => {
-              pool.query(`UPDATE employees SET role_id = ${resp.updateRoleEmployeeRole[0]} WHERE id = ${resp.updateRoleEmployee[0]};`);
-              console.log(`Updated ${resp.updateRoleEmployee[1]}'s role to ${resp.updateRoleEmployeeRole[1]}from the database`);
-              askQuestion();
-            });
+            if(err){
+              console.log(err.message)
+            } else {
+              const roleChoices = rows.map(role => ({
+                name: role.title,
+                value: [role.id, role.title, role.salary, role.department_id]
+              }));
+              inquirer.prompt([
+                {
+                  type: 'list',
+                  name: 'updateRoleEmployee',
+                  message: "Which employee's role do you want to update?",
+                  choices: employeeChoices
+                },
+                {
+                  type: 'list',
+                  name: 'updateRoleEmployeeRole',
+                  message: "Which role do you want to assign to the selected employee?",
+                  choices: roleChoices
+                }
+              ])
+              .then(resp => {
+                pool.query(`UPDATE employees SET role_id = ${resp.updateRoleEmployeeRole[0]} WHERE id = ${resp.updateRoleEmployee[0]};`);
+                console.log(`Updated ${resp.updateRoleEmployee[1]}'s role to ${resp.updateRoleEmployeeRole[1]} from the database`);
+                askQuestion();
+              });
+            };
           });
         };
       });
