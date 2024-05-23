@@ -7,7 +7,7 @@ The goal of this project is to view tables of employees, their managers, and the
 ## Visuals
 * ![Here is a screenshot](./utils/images/screenshot.png) Here is a screenshot of an example employee database.
 
-* [Link to video demonstration](https://app.screencastify.com/v2/manage/videos/Lx7cy9uC9rQgdyA93pza)
+* [Link to video demonstration]( https://drive.google.com/file/d/1xxQnwCe6dZW9M3DAxEiYiLr15qR5iael/view)
 
 ## Usage
 This is intended to keep track of employees using inquirer and postgreSQL. This is also for grading purposes.
